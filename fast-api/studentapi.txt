@@ -1,0 +1,146 @@
+class Item(BaseModel):
+    student_id: int
+    first_name: str
+    last_name: str
+    date_of_birth: str
+    phone_number: str
+
+@app.get("/students/")
+def get_students():
+    try:
+        # Establish a database connection
+        connection = mysql.connector.connect(**db_config)
+
+        # Create a cursor to execute SQL queries
+        cursor = connection.cursor()
+
+        # Define the SQL query to retrieve data (e.g., all students)
+        query = "SELECT * FROM students"
+
+        # Execute the SQL query
+        cursor.execute(query)
+
+        # Fetch all the rows
+        result = cursor.fetchall()
+
+        # Convert the result to a list of dictionaries
+        students = [dict(zip(cursor.column_names, row)) for row in result]
+
+        # Close the cursor and the database connection
+        cursor.close()
+        connection.close()
+        
+        return students
+
+    except mysql.connector.Error as err:
+        return {"error": f"Error: {err}"}
+
+@app.get("/student/{student_id}")
+async def getStudentId(student_id: int):
+    connection = mysql.connector.connect(**db_config)
+    cursor = connection.cursor()
+    query = "SELECT * FROM students WHERE student_id = %s"
+    cursor.execute(query, (student_id,))
+    result = cursor.fetchone()
+    student = dict(zip(cursor.column_names, result))
+    cursor.close()
+    connection.close()
+    return student
+
+
+@app.post("/items/", response_model=Item)
+def create_item(item: Item):
+    try:
+        # Establish a database connection
+        connection = mysql.connector.connect(**db_config)
+
+        # Create a cursor to execute SQL queries
+        cursor = connection.cursor()
+
+        # Define the SQL query to insert a new student
+        query = "INSERT INTO students (student_id, first_name, last_name, date_of_birth, phone_number) VALUES (%s, %s, %s, %s, %s)"
+
+        # Execute the SQL query
+        cursor.execute(query, (item.student_id, item.first_name, item.last_name, item.date_of_birth, item.phone_number))
+
+        # Commit the changes
+        connection.commit()
+
+        # Close the cursor and the database connection
+        cursor.close()
+        connection.close()
+
+        return item
+    except mysql.connector.Error as err:
+        return {"error": f"Error: {err}"}
+
+        '''
+@app.get("/")
+async def get_data():
+    return w3.eth.block_number
+if w3.eth.block_number is not None:
+    print("Connected to Hardhat Network")
+else:
+    print("Failed to connect")
+  
+
+@app.post("/test_store/")
+async def test_store(favorite_number: int):
+    try:
+        # Create a transaction to call the store function
+        transaction = contract.functions.store(favorite_number).build_transaction({
+            'from': your_account_address,
+            'nonce': w3.eth.get_transaction_count(your_account_address),
+            'gas': 2000000,
+            'gasPrice': w3.to_wei('50', 'gwei')
+        })
+
+        # Log the transaction details
+        print(f"Transaction: {transaction}")
+
+        # Sign the transaction
+        signed_transaction = w3.eth.account.sign_transaction(transaction, private_key=your_private_key)
+
+        # Send the transaction
+        tx_hash = w3.eth.send_raw_transaction(signed_transaction.raw_transaction)
+
+        # Wait for the transaction receipt
+        tx_receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
+
+        # Convert the transaction receipt to a JSON-compatible format
+        tx_receipt_json = {
+            'transactionHash': tx_receipt.transactionHash.hex(),
+            'transactionIndex': tx_receipt.transactionIndex,
+            'blockHash': tx_receipt.blockHash.hex(),
+            'blockNumber': tx_receipt.blockNumber,
+            'from': tx_receipt['from'],
+            'to': tx_receipt['to'],
+            'cumulativeGasUsed': tx_receipt.cumulativeGasUsed,
+            'gasUsed': tx_receipt.gasUsed,
+        }
+
+        return {"message": "Store success", "transaction_receipt": tx_receipt_json}
+    except Exception as e:
+        return {"error": str(e)}
+
+@app.get("/test_retrieve/")
+async def test_retrieve():
+    try:
+        # Call the retrieve function
+        retrieved_value = contract.functions.retrieve().call()
+        
+        return {"status": "Success", "retrieved_value": retrieved_value}
+        
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@app.get("/list_contract_functions/")
+async def list_contract_functions():
+    try:
+        # Get all functions from the contract ABI
+        functions = [func.fn_name for func in contract.all_functions()]
+        return {"functions": functions}
+    except Exception as e:
+        return {"error": str(e)}
+'''
