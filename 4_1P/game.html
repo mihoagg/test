@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Guessing Game</title>
+</head>
+<body>
+    <script src="js\vue.global.js" defer></script>
+    <script src="appgame.js" defer></script>
+
+    <div id="app">
+        <h1>Number Guessing Game</h1>
+        <label for="guess">Enter your guess from 1 to 100:</label>
+        <input type="text" id="guess" v-model="userGuess">
+        <br><br>
+        <button @click="checkGuess">Check Guess</button>
+        <button>Give Up</button>
+        <button>Start Over</button>
+        <p>{{ message }}</p>
+    </div>
+</body>
+</html>
